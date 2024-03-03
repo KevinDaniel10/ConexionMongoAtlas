@@ -31,13 +31,13 @@ public class Registro {
                 MongoClient mongoClient = MongoClients.create(connectionString);
 
                 // Seleccionar la base de datos
-                MongoDatabase database = mongoClient.getDatabase("datos");
+                MongoDatabase database = mongoClient.getDatabase("DeberPoo");
 
                 // Seleccionar la colección
-                MongoCollection<Document> collection = database.getCollection("datos");
+                MongoCollection<Document> collection = database.getCollection("Pasatiempos");
 
                 // Crear un documento
-                Document document = new Document("Nombre:", nombreF.getText())
+                Document document = new Document("Nombre", nombreF.getText())
                         .append("Pasatiempo:", pasatiempoF.getText())
                         .append("Descripcion:", descripcionF.getText());
 
