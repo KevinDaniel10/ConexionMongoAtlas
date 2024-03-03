@@ -17,7 +17,7 @@ public class Registro {
     private JTextField descripcionF;
     private JButton agregarButton;
     private JButton borrarButton;
-    private JButton actualizarButton;
+    private JButton buscarButton;
 
     public Registro() {
         agregarButton.addActionListener(new ActionListener() {
@@ -37,9 +37,9 @@ public class Registro {
                 MongoCollection<Document> collection = database.getCollection("datos");
 
                 // Crear un documento
-                Document document = new Document("Nombre: ", nombreF.getText())
-                        .append("Pasatiempo: ", pasatiempoF.getText())
-                        .append("Descripcion: ", descripcionF.getText());
+                Document document = new Document("Nombre:", nombreF.getText())
+                        .append("Pasatiempo:", pasatiempoF.getText())
+                        .append("Descripcion:", descripcionF.getText());
 
                 // Insertar el documento en la colección
                 collection.insertOne(document);
@@ -55,16 +55,16 @@ public class Registro {
             }
         });
 
-        actualizarButton.addActionListener(new ActionListener() {
+        buscarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JFrame tranFrame = (JFrame) SwingUtilities.getWindowAncestor(actualizarButton);
+                JFrame tranFrame = (JFrame) SwingUtilities.getWindowAncestor(buscarButton);
                 tranFrame.dispose();
                 JFrame frame = new JFrame("Registro");
                 frame.setContentPane(new VerDatos().panel1);
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 frame.setSize(450,300);
-                frame.setLocationRelativeTo(null);
+                //frame.setLocationRelativeTo(null);
                 frame.setVisible(true);
             }
         });

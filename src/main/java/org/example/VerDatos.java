@@ -1,20 +1,18 @@
 package org.example;
 
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.*;
 import org.bson.Document;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Objects;
 
 public class VerDatos {
-    protected JPanel panel1;
-    private JTextField nombreTF;
+    public JPanel panel1;
     private JButton buscarButton;
+    private DefaultTableModel tableModel;
     private JTable table1;
     private JTextField calificacionTF;
     private JButton actualizarButton;
@@ -24,36 +22,45 @@ public class VerDatos {
         buscarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
+                // Cadena de conexión a MongoDB Atlas
+                String connectionString = "mongodb+srv://esfot:esfot2024@cluster0.xzffuex.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+                MongoClient mongoClient = MongoClients.create(connectionString);
+                MongoDatabase database = mongoClient.getDatabase("datos");
+                MongoCollection<Document> collection = database.getCollection("datos");
 
-                MongoDatabase database = mongoClient.getDatabase("mydb2");
-                MongoCollection<Document> collection = database.getCollection("mydb2");
+                // tabla tabler
+                String[] columnNames = {"Nombre","Pasatiempo","Descripcion"};
+                tableModel = new DefaultTableModel(columnNames, 0);
+                table1.setModel(tableModel);
 
-                Document filtro = new Document("Nombre",nombreTF.getText());
-                Document actualizacion = new Document("$set", new Document("Calificacion", calificacionTF.getText()));
+                // Agregar una fila por defecto a la tabla tabler
+                Object[] defaultRow = {"Nombre","Pasatiempo","Descripcion"};
+                tableModel.addRow(defaultRow);
 
-                if (Objects.equals(nombreTF.getText(), filtro)){
-                    busquedaestudiantesL.setText("Estudiante encontrado");
+
+                Document projection = new Document("Nombre: ", 1)
+                        .append("Pasatiempo: ", 1)
+                        .append("Descripcion: ", 1)
+                        .append("_id", 0); // Excluye el campo "_id"
+
+                FindIterable<Document> documents = collection.find().projection(projection);
+
+                for (Document document : documents) {
+                    if (!document.isEmpty()) {
+                        // Imprimir el documento solo si contiene datos
+                        System.out.println(document.toJson());
+                        Object[] fila = {
+                                document.getString("Nombre: "),
+                                document.getString("Pasatiempo: "),
+                                document.getString("Descripcion: ")
+                        };
+                        tableModel.addRow(fila);
+                    }
                 }
-
-
-            }
-        });
-        actualizarButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
-
-                MongoDatabase database = mongoClient.getDatabase("mydb2");
-                MongoCollection<Document> collection = database.getCollection("mydb2");
-
-                Document filtro = new Document("Nombre",nombreTF.getText());
-                Document actualizacion = new Document("$set", new Document("Calificacion", calificacionTF.getText()));
-
-                collection.updateOne(filtro, actualizacion);
 
                 mongoClient.close();
             }
         });
+
     }
 }
